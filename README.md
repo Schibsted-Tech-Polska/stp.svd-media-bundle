@@ -1,2 +1,1 @@
-# stp.svd-media-bundle
-Svd media bundle
+# SvD Media Bundle
