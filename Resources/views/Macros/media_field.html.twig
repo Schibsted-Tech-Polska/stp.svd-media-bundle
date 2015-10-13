@@ -1,14 +1,29 @@
 {% block media_widget %}
-    <div class="dropzone{{ attr.class is defined ? ' ' ~ attr.class : '' }}" data-id="{{ id }}"
-        data-url="{{ oneup_uploader_endpoint('images') }}" data-limit="1" data-ratio="{{ ratio }}">
-        <input type="hidden" {{ block('widget_attributes') }} value="{{ value.id is defined ? value.id : '' }}"/>
-        <div class="dz-default dz-message">
-            <span>
-                {{ 'dropzone.drop_file.info'|trans }}
-                {% if ratio %}
-                    <br>{{ 'dropzone.ratio.info'|trans({ '%ratio%': ratio }) }}
+    <div class="modal-section-row-value">
+        <div class="media-loader">
+            <ul class="media-loader-files" data-prototype="{{ block('media_item_prototype')|e }}">
+                {% if value.filename is defined %}
+                    {{ block('media_item_widget') }}
                 {% endif %}
-            </span>
+            </ul>
+            <div class="dropzone media-loader-dropzone{{ attr.class is defined ? ' ' ~ attr.class : '' }}" data-id="{{ id }}"
+                data-url="{{ path('media_file_upload') }}" data-limit="1">
+            </div>
         </div>
     </div>
+{% endblock %}
+
+{%- block media_item_widget -%}
+    {% spaceless %}
+        <li class="media-loader-file">
+            <img src="{{ value.filename is defined ? value.filename|mediaUrl : '' }}" alt="" class="media-loader-file-img">
+            <span class="media-loader-file-remove btn btn-small"><i class="icon icon-remove"></i></span>
+            <input type="hidden" {{ block('widget_attributes') }} value="{{ value.id is defined ? value.id : '' }}"/>
+        </li>
+    {% endspaceless %}
+{%- endblock -%}
+
+{%- block media_item_prototype -%}
+    {% set value = null %}
+    {{ block('media_item_widget') }}
 {% endblock %}

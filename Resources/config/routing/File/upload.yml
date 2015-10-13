@@ -1,0 +1,5 @@
+media_file_upload:
+    defaults:
+        _controller:                    SvdMediaBundle:File:upload
+    methods:                            [POST]
+    path:                               /media/file/upload
