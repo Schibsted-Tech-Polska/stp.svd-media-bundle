@@ -1,0 +1,12 @@
+services:
+    svd_media.alias.manager_service:
+        alias:                          doctrine
+
+    svd_media.file.repository:
+        arguments:
+            -                           Svd\MediaBundle\Entity\File
+        calls:
+            -                           [setTranslator, ["@translator"]]
+        class:                          Svd\MediaBundle\Entity\Repository\FileRepository
+        factory_method:                 getRepository
+        factory_service:                svd_media.alias.manager_service

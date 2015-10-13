@@ -1,0 +1,42 @@
+services:
+    gedmo.listener.softdeleteable:
+        class:                          Gedmo\SoftDeleteable\SoftDeleteableListener
+        tags:
+            -
+                name:                   doctrine.event_subscriber
+                connection:             default
+
+    svd_media.form_type.media:
+        calls:
+            -                           [setIdToFileTransformer, [@svd_media.transformer.id_to_file]]
+        class:                          Svd\MediaBundle\Form\Type\MediaType
+        tags:
+            -
+                name:                   form.type
+                alias:                  media
+
+    svd_media.listener.upload:
+        calls:
+            -                           [setFileRepository, [@svd_media.file.repository]]
+            -                           [setMediaUrlExtension, [@svd_media.twig_extension.media_url]]
+        class:                          Svd\MediaBundle\EventListener\UploadListener
+        tags:
+            -
+                name:                   kernel.event_listener
+                event:                  oneup_uploader.post_upload
+                method:                 onUpload
+
+    svd_media.twig_extension.media_url:
+        calls:
+            -                           [setMediaBaseUrl, [%svd_media.base_url%]]
+        class:                          Svd\MediaBundle\Twig\MediaUrlExtension
+        public:                         false
+        tags:
+            -
+                name:                   twig.extension
+
+    svd_media.transformer.id_to_file:
+        calls:
+            -                           [setFileRepository, [@svd_media.file.repository]]
+            -                           [setMediaUrlExtension, [@svd_media.twig_extension.media_url]]
+        class:                          Svd\MediaBundle\Form\DataTransformer\IdToFileTransformer

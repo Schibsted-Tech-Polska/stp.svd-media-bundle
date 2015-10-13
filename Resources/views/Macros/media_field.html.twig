@@ -1,0 +1,14 @@
+{% block media_widget %}
+    <div class="dropzone{{ attr.class is defined ? ' ' ~ attr.class : '' }}" data-id="{{ id }}"
+        data-url="{{ oneup_uploader_endpoint('images') }}" data-limit="1" data-ratio="{{ ratio }}">
+        <input type="hidden" {{ block('widget_attributes') }} value="{{ value.id is defined ? value.id : '' }}"/>
+        <div class="dz-default dz-message">
+            <span>
+                {{ 'dropzone.drop_file.info'|trans }}
+                {% if ratio %}
+                    <br>{{ 'dropzone.ratio.info'|trans({ '%ratio%': ratio }) }}
+                {% endif %}
+            </span>
+        </div>
+    </div>
+{% endblock %}

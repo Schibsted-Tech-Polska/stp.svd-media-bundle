@@ -1,0 +1,45 @@
+Svd\MediaBundle\Entity\File:
+    repositoryClass:                    Svd\MediaBundle\Entity\Repository\FileRepository
+    table:                              file
+    type:                               entity
+
+    uniqueConstraints:
+        FI_UNIQUE_IDX_1:
+            columns:
+                -                       filename
+
+    fields:
+        id:
+            generator:
+                strategy:               AUTO
+            id:                         true
+            type:                       integer
+        filename:
+            type:                       string
+        status:
+            nullable:                   true
+            type:                       integer
+        mimeType:
+            column:                     mime_type
+            nullable:                   true
+            type:                       string
+        type:
+            nullable:                   true
+            type:                       string
+        size:
+            nullable:                   true
+            type:                       integer
+        createdAt:
+            column:                     created_at
+            gedmo:
+                timestampable:
+                    on:                 create
+            nullable:                   true
+            type:                       datetime
+        updatedAt:
+            column:                     updated_at
+            gedmo:
+                timestampable:
+                    on:                 update
+            nullable:                   true
+            type:                       datetime
