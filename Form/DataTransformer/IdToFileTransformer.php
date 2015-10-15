@@ -57,7 +57,7 @@ class IdToFileTransformer implements DataTransformerInterface
     public function transform($file)
     {
         $ret = null;
-        if ($file) {
+        if ($file instanceof File) {
             $url = $this->mediaUrlExtension->getMediaUrl($file->getFilename());
             $ret = [
                 'id' => $file->getId(),
@@ -81,15 +81,22 @@ class IdToFileTransformer implements DataTransformerInterface
     {
         $ret = null;
         if (!empty($id)) {
-            if (!is_numeric($id)) {
-                throw new TransformationFailedException('Value is not numeric');
+            if (is_numeric($id)) {
+                $ret = $this->fileRepository->getOneBy([
+                    'id' => $id,
+                ]);
+            } elseif (is_file($id)) {
+                $ret = $id;
             }
+//            if (!is_numeric($id)) {
+//                throw new TransformationFailedException('Value is not numeric');
+//            }
         }
-        if ($id) {
-            $ret = $this->fileRepository->getOneBy([
-                'id' => $id,
-            ]);
-        }
+//        if ($id) {
+//            $ret = $this->fileRepository->getOneBy([
+//                'id' => $id,
+//            ]);
+//        }
 
         return $ret;
     }

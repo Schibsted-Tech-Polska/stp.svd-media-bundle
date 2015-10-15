@@ -24,27 +24,22 @@ class FileController extends Controller
      */
     public function uploadAction(Request $request)
     {
-        $files = $this->getFiles($request->files);
+        $file = $this->getFile($request->files);
         $fs = new Filesystem();
-        $tmpFiles = [];
 
-        /** @var UploadedFile $file */
-        foreach ($files as $file) {
-            $file->getPathname();
-            dump($file->getClientOriginalName());
-            $tmpFilePath = sys_get_temp_dir() . '/' . md5(time());
-            $fs->copy($file->getPathname(), $tmpFilePath);
+        $tmpFilePath = sys_get_temp_dir() . '/' . md5(time());
+        $fs->copy($file->getPathname(), $tmpFilePath);
 
-            $tmpFile = new File($tmpFilePath);
+        $tmpFile = new File($tmpFilePath);
 
-            $tmpFiles[] = [
-                'pathname' => $tmpFile->getPathname(),
-                'originalName' => $file->getClientOriginalName(),
-                'originalExtension' => $file->getClientOriginalExtension(),
-            ];
-        }
+        $response = [
+            'pathname' => $tmpFile->getPathname(),
+            'originalName' => $file->getClientOriginalName(),
+            'originalExtension' => $file->getClientOriginalExtension(),
 
-        return new JsonResponse($tmpFiles);
+        ];
+
+        return new JsonResponse($response);
     }
 
     /**
@@ -52,11 +47,11 @@ class FileController extends Controller
      *
      * @param FileBag $bag bag
      *
-     * @return array
+     * @return UploadedFile|null
      */
-    protected function getFiles(FileBag $bag)
+    protected function getFile(FileBag $bag)
     {
-        $files = array();
+        $files = [];
         $fileBag = $bag->all();
         foreach ($fileBag as $file) {
             if (is_array($file) || null === $file) {
@@ -64,6 +59,12 @@ class FileController extends Controller
             }
             $files[] = $file;
         }
-        return $files;
+
+        $ret = null;
+        if (count($files) > 0) {
+            $ret = $files[0];
+        }
+
+        return $ret;
     }
 }

@@ -7,7 +7,7 @@
                 {% endif %}
             </ul>
             <div class="dropzone media-loader-dropzone{{ attr.class is defined ? ' ' ~ attr.class : '' }}" data-id="{{ id }}"
-                data-url="{{ path('media_file_upload') }}" data-limit="1">
+                data-url="{{ path('media_file_upload') }}" data-limit="100">
             </div>
         </div>
     </div>
