@@ -27,7 +27,7 @@ class FileController extends Controller
         $file = $this->getFile($request->files);
         $fs = new Filesystem();
 
-        $tmpFilePath = sys_get_temp_dir() . '/' . md5(time());
+        $tmpFilePath = sys_get_temp_dir() . '/' . $this->generateName($file);
         $fs->copy($file->getPathname(), $tmpFilePath);
 
         $tmpFile = new File($tmpFilePath);
@@ -36,7 +36,6 @@ class FileController extends Controller
             'pathname' => $tmpFile->getPathname(),
             'originalName' => $file->getClientOriginalName(),
             'originalExtension' => $file->getClientOriginalExtension(),
-
         ];
 
         return new JsonResponse($response);
@@ -66,5 +65,20 @@ class FileController extends Controller
         }
 
         return $ret;
+    }
+
+    /**
+     * Generate name
+     *
+     * @param UploadedFile $file file
+     *
+     * @return string
+     */
+    protected function generateName(UploadedFile $file)
+    {
+        $filename = md5(microtime());
+        $filename .= '.' . $file->getClientOriginalExtension();
+
+        return $filename;
     }
 }

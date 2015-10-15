@@ -6,8 +6,6 @@ use InvalidArgumentException;
 use Svd\MediaBundle\Form\DataTransformer\IdToFileTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -44,9 +42,6 @@ class MediaType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->addViewTransformer($this->idToFileTransformer);
-        $builder->addEventListener(FormEvents::POST_SUBMIT, function(FormEvent $event) {
-            dump($event); die;
-        });
     }
 
     /**
