@@ -50,6 +50,7 @@ class UploadListener
     protected function uploadFile(File $file)
     {
         $tmpPath = sys_get_temp_dir() . '/';
+        // @TODO: it should be on configuration
         $images = [
             'default' => [
                 'ratio' => 16/9,
@@ -76,6 +77,15 @@ class UploadListener
         }
     }
 
+    /**
+     * Crop image
+     *
+     * @param File    $file  file
+     * @param float   $ratio ratio
+     * @param integer $size  size
+     *
+     * @return Imagick
+     */
     protected function cropImage(File $file, $ratio, $size)
     {
         $filePath = sys_get_temp_dir() . '/' . $file->getFilename();
