@@ -17,14 +17,12 @@ services:
 
     svd_media.listener.upload:
         calls:
-            -                           [setFileRepository, [@svd_media.file.repository]]
-            -                           [setMediaUrlExtension, [@svd_media.twig_extension.media_url]]
+            -                           [setFilesystem, [@knp_gaufrette.filesystem_map]]
         class:                          Svd\MediaBundle\EventListener\UploadListener
         tags:
             -
-                name:                   kernel.event_listener
-                event:                  oneup_uploader.post_upload
-                method:                 onUpload
+                name:                   doctrine.event_listener
+                event:                  prePersist
 
     svd_media.twig_extension.media_url:
         calls:

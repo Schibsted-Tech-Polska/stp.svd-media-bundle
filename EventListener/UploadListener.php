@@ -2,47 +2,32 @@
 
 namespace Svd\MediaBundle\EventListener;
 
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Gaufrette\Filesystem;
+use Imagick;
+use Knp\Bundle\GaufretteBundle\FilesystemMap;
 use Svd\MediaBundle\Entity\File;
-use Svd\MediaBundle\Entity\Repository\FileRepository;
-use Oneup\UploaderBundle\Event\PostUploadEvent;
-use Oneup\UploaderBundle\Uploader\File\GaufretteFile;
-use Svd\MediaBundle\Twig\MediaUrlExtension;
 
 /**
  * EventListener
  */
 class UploadListener
 {
-    /** @var FileRepository */
-    protected $fileRepository;
-
-    /** @var MediaUrlExtension */
-    protected $mediaUrlExtension;
+    /** @var Filesystem */
+    protected $filesystem;
 
     /**
-     * Set file repository
+     * Set filesystem
      *
-     * @param FileRepository $fileRepository file repository
+     * @param FilesystemMap $filesystemMap filesystem map
      *
      * @return self
      */
-    public function setFileRepository($fileRepository)
+    public function setFilesystem(FilesystemMap $filesystemMap)
     {
-        $this->fileRepository = $fileRepository;
-
-        return $this;
-    }
-
-    /**
-     * Set media url extension
-     *
-     * @param MediaUrlExtension $mediaUrlExtension media url extension
-     *
-     * @return self
-     */
-    public function setMediaUrlExtension(MediaUrlExtension $mediaUrlExtension)
-    {
-        $this->mediaUrlExtension = $mediaUrlExtension;
+        // @TODO: name of filesystem schould be set in configuration of media bundle
+        $filesystem = $filesystemMap->get('aws_s3_type');
+        $this->filesystem = $filesystem;
 
         return $this;
     }
@@ -50,25 +35,59 @@ class UploadListener
     /**
      * On upload
      *
-     * @param PostUploadEvent $event event
+     * @param LifecycleEventArgs $event event
      */
-    public function onUpload(PostUploadEvent $event)
+    public function prePersist(LifecycleEventArgs $event)
     {
-        /** @var GaufretteFile $file */
-        $file = $event->getFile();
+        $file = $event->getEntity();
+        if ($file instanceof File) {
+            $this->uploadFile($file);
+            $file->setStatus(File::STATUS_ACTIVE);
+        }
+    }
 
-        $newFile = new File();
-        $newFile->setFilename($file->getName());
-        $newFile->setMimeType($file->getMimeType());
-        $newFile->setType($event->getType());
-        $newFile->setStatus(File::STATUS_WAITING);
-        $newFile->setSize($file->getSize());
+    protected function uploadFile(File $file)
+    {
+        $tmpPath = sys_get_temp_dir() . '/';
+        $images = [
+            'default' => [
+                'ratio' => 16/9,
+                'size' => 1600,
+            ],
+            'thumbnail' => [
+                'ratio' => 16/9,
+                'size' => 720,
+            ],
+        ];
 
-        $this->fileRepository->insert($newFile, true);
+        foreach ($images as $key => $options) {
+            $filename = $key . '_' . $file->getFilename();
+            $filePath = $key . '/' . $file->getFilename();
+            $image = $this->cropImage($file, $options['ratio'], $options['size']);
+            $image->writeImage($tmpPath . $filename);
+            $image->getImageBlob();
 
+            $this->filesystem->write($filePath, $image);
+        }
+    }
 
-        $response = $event->getResponse();
-        $response['id'] = $newFile->getId();
-        $response['url'] = $this->mediaUrlExtension->getMediaUrl($newFile->getFilename());
+    protected function cropImage(File $file, $ratio, $size)
+    {
+        $filePath = sys_get_temp_dir() . '/' . $file->getFilename();
+        $im = new Imagick($filePath);
+
+        $originalWidth = $im->getImageWidth();
+        $originalHeight = $im->getImageHeight();
+        $targetWidth = $targetHeight = min($size, max($originalWidth, $originalHeight));
+
+        if ($ratio < 1) {
+            $targetWidth = $targetHeight * $ratio;
+        } else {
+            $targetHeight = $targetWidth / $ratio;
+        }
+
+        $im->cropThumbnailImage($targetWidth, $targetHeight);
+
+        return $im;
     }
 }
