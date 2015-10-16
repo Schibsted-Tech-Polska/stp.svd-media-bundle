@@ -3,6 +3,7 @@
 namespace Svd\MediaBundle\EventListener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Gaufrette\Adapter\MetadataSupporter;
 use Gaufrette\Filesystem;
 use Imagick;
 use Knp\Bundle\GaufretteBundle\FilesystemMap;
@@ -67,7 +68,11 @@ class UploadListener
             $image->writeImage($tmpPath . $filename);
             $image->getImageBlob();
 
-            $this->filesystem->write($filePath, $image);
+            if ($this->filesystem->getAdapter() instanceof MetadataSupporter) {
+                $this->filesystem->getAdapter()
+                    ->setMetadata($file->getFilename(), ['contentType' => $file->getMimeType()]);
+            }
+            $this->filesystem->write($filePath, $image->getImageBlob());
         }
     }
 
