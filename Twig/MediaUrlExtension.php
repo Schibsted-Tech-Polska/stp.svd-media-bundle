@@ -42,9 +42,9 @@ class MediaUrlExtension extends Twig_Extension
      *
      * @return string
      */
-    public function getMediaUrl($filename)
+    public function getMediaUrl($filename, $dir = 'default')
     {
-        return sprintf('%s/%s', $this->mediaBaseUrl, $filename);
+        return sprintf('%s/%s/%s', $this->mediaBaseUrl, $dir, $filename);
     }
 
     /**

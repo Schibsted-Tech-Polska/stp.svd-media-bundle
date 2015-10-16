@@ -16,7 +16,7 @@
 {%- block media_item_widget -%}
     {% spaceless %}
         <li class="media-loader-file">
-            <img src="{{ value.filename is defined ? value.filename|mediaUrl : '' }}" alt="" class="media-loader-file-img">
+            <img src="{{ value.filename is defined ? value.filename|mediaUrl('thumbnail') : '' }}" alt="" class="media-loader-file-img">
             <span class="media-loader-file-remove btn btn-small"><i class="icon icon-remove"></i></span>
             <input type="hidden" {{ block('widget_attributes') }} value="{{ value.id is defined ? value.id : '' }}"/>
         </li>
