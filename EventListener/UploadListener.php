@@ -8,6 +8,7 @@ use Gaufrette\Filesystem;
 use Imagick;
 use Knp\Bundle\GaufretteBundle\FilesystemMap;
 use Svd\MediaBundle\Entity\File;
+use Svd\MediaBundle\Manager\MediaManager;
 
 /**
  * EventListener
@@ -16,6 +17,9 @@ class UploadListener
 {
     /** @var Filesystem */
     protected $filesystem;
+
+    /** @var MediaManager */
+    protected $mediaManager;
 
     /**
      * Set filesystem
@@ -29,6 +33,20 @@ class UploadListener
         // @TODO: name of filesystem schould be set in configuration of media bundle
         $filesystem = $filesystemMap->get('aws_s3_type');
         $this->filesystem = $filesystem;
+
+        return $this;
+    }
+
+    /**
+     * Set media manager
+     *
+     * @param MediaManager $mediaManager media manager
+     *
+     * @return self
+     */
+    public function setMediaManager(MediaManager $mediaManager)
+    {
+        $this->mediaManager = $mediaManager;
 
         return $this;
     }

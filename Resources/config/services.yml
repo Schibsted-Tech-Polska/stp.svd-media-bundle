@@ -18,6 +18,7 @@ services:
     svd_media.listener.upload:
         calls:
             -                           [setFilesystem, [@knp_gaufrette.filesystem_map]]
+            -                           [setMediaManager, [@svd_media.manager.media]]
         class:                          Svd\MediaBundle\EventListener\UploadListener
         tags:
             -
@@ -38,3 +39,8 @@ services:
             -                           [setFileRepository, [@svd_media.file.repository]]
             -                           [setMediaUrlExtension, [@svd_media.twig_extension.media_url]]
         class:                          Svd\MediaBundle\Form\DataTransformer\IdToFileTransformer
+
+    svd_media.manager.media:
+        arguments:
+            defaultTransformer:         default
+        class:                          Svd\MediaBundle\Manager\MediaManager
