@@ -47,6 +47,11 @@ class UploadListener
         }
     }
 
+    /**
+     * Upload file
+     *
+     * @param File $file file
+     */
     protected function uploadFile(File $file)
     {
         $tmpPath = sys_get_temp_dir() . '/';

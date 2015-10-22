@@ -22,7 +22,14 @@ class SvdMediaExtension extends Extension implements PrependExtensionInterface
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();
-        $this->processConfiguration($configuration, $configs);
+        $config = $this->processConfiguration($configuration, $configs);
+
+        echo "<pre>";
+
+        var_dump($config, $config['adapter']);
+
+        echo "</pre>";
+        die;
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('parameters.yml');
