@@ -4,6 +4,7 @@ namespace Svd\MediaBundle\Manager;
 
 use Gaufrette\Filesystem;
 use Knp\Bundle\GaufretteBundle\FilesystemMap;
+use Svd\MediaBundle\Transformer\ImageTransformer;
 
 /**
  * Manager
@@ -46,6 +47,16 @@ class MediaManager
     }
 
     /**
+     * Get adapter
+     *
+     * @return Filesystem
+     */
+    public function getAdapter()
+    {
+        return $this->adapter;
+    }
+
+    /**
      * Set transformers
      *
      * @param array $transformers transformers
@@ -57,5 +68,59 @@ class MediaManager
         $this->transformers = $transformers;
 
         return $this;
+    }
+
+    /**
+     * Add transformer
+     *
+     * @param string           $name        name
+     * @param ImageTransformer $transformer transformer
+     *
+     * @return self
+     */
+    public function addTransformer($name, ImageTransformer $transformer)
+    {
+        if (!array_key_exists($name, $this->transformers)) {
+            $this->transformers[$name] = $transformer;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get transformers
+     *
+     * @return array
+     */
+    public function getTransformers()
+    {
+        return $this->transformers;
+    }
+
+    /**
+     * Get transformer
+     *
+     * @param string $name name
+     *
+     * @return ImageTransformer|null
+     */
+    public function getTransformer($name)
+    {
+        $ret = null;
+        if (array_key_exists($name, $this->transformers)) {
+            $ret = $this->transformers[$name];
+        }
+
+        return $ret;
+    }
+
+    /**
+     * Get default transformer
+     *
+     * @return ImageTransformer
+     */
+    public function getDefaultTransformer()
+    {
+        return $this->transformers[$this->defaultTransformer];
     }
 }
