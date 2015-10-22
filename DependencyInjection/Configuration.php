@@ -50,10 +50,27 @@ class Configuration implements ConfigurationInterface
             ->useAttributeAsKey('name')
             ->prototype('array')
                 ->children()
-                    ->scalarNode('ratio')->end()
-                    ->scalarNode('size')->end()
+                    ->floatNode('ratio')
+                        ->defaultValue(null)
+                        ->beforeNormalization()
+                        ->ifString()
+                        ->then(function ($value) {
+                            $ratio = explode('/', $value);
+                            if (preg_match('#^\d+\/\d+$#', $value) && isset($ratio[0]) && isset($ratio[1])) {
+                                $value = $ratio[0] / $ratio[1];
+                            }
+                            return $value;
+                        })
+                        ->end()
+                    ->end()
+                    ->integerNode('size')
+                        ->defaultValue(null)
+                    ->end()
                     ->booleanNode('is_default')
                         ->defaultFalse()
+                    ->end()
+                    ->scalarNode('folder')
+                        ->defaultValue(null)
                     ->end()
                 ->end()
             ->end();

@@ -20,6 +20,16 @@ class MediaManager
     protected $defaultTransformer;
 
     /**
+     * Construct
+     *
+     * @param string $defaultTransformer default transformer
+     */
+    public function __construct($defaultTransformer)
+    {
+        $this->defaultTransformer = $defaultTransformer;
+    }
+
+    /**
      * Set adapter
      *
      * @param FilesystemMap $map     map
@@ -31,6 +41,20 @@ class MediaManager
     {
         $adapter = $map->get($adapter);
         $this->adapter = $adapter;
+
+        return $this;
+    }
+
+    /**
+     * Set transformers
+     *
+     * @param array $transformers transformers
+     *
+     * @return self
+     */
+    public function setTransformers(array $transformers)
+    {
+        $this->transformers = $transformers;
 
         return $this;
     }

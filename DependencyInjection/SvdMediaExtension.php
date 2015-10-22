@@ -2,8 +2,11 @@
 
 namespace Svd\MediaBundle\DependencyInjection;
 
+use Svd\MediaBundle\Transformer\ImageTransformer;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
@@ -38,12 +41,47 @@ class SvdMediaExtension extends Extension implements PrependExtensionInterface
             'adapter' => $config['adapter'],
         ]);
 
-        $container->setDefinition('svd_media.manager.media', $def);
+        $defaultTransformer = null;
+        $transformers = [];
+        foreach ($config['transformers'] as $key => $options) {
+            if (!$options['folder']) {
+                $options['folder'] = $key;
+            }
+            $transformer = $this->getTransformer($options);
 
-//        die;
+            $transformers[] = $transformer;
+            if ($options['is_default'] === true) {
+                $defaultTransformer = $key;
+            }
+        }
+
+        if (!$defaultTransformer) {
+            throw new InvalidConfigurationException('Default transformer must be set!');
+        }
+
+        $def->addMethodCall('setTransformers', [
+            'transformers' => $transformers,
+        ]);
+        $def->addArgument('defaultTransformer', $defaultTransformer);
+
+        $container->setDefinition('svd_media.manager.media', $def);
     }
 
     public function prepend(ContainerBuilder $container)
     {
+    }
+
+    /**
+     * Get transformer
+     *
+     * @param array $options options
+     *
+     * @return Definition
+     */
+    protected function getTransformer(array $options)
+    {
+        $def = new Definition('Svd\MediaBundle\Transformer\ImageTransformer', $options);
+
+        return $def;
     }
 }
