@@ -143,8 +143,7 @@ class MediaManager
     public function uploadFile(File $file)
     {
         foreach ($this->getTransformers() as $transformer) {
-            $name = $transformer->getFolder();
-            $filePath = $name . '/' . $file->getFilename();
+            $filePath = $transformer->getFolder() . '/' . $file->getFilename();
 
             $newImage = $transformer->transform($this->getTmpPath() . $file->getFilename());
 
