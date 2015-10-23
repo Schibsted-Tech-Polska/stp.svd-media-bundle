@@ -80,7 +80,11 @@ class SvdMediaExtension extends Extension implements PrependExtensionInterface
      */
     protected function getTransformer(array $options)
     {
-        $def = new Definition('Svd\MediaBundle\Transformer\ImageTransformer', $options);
+        $def = new Definition('Svd\MediaBundle\Transformer\ImageTransformer', [null, null, null, null]);
+        $def->replaceArgument(0, $options['folder']);
+        $def->replaceArgument(1, $options['is_default']);
+        $def->replaceArgument(2, $options['ratio']);
+        $def->replaceArgument(3, $options['size']);
 
         return $def;
     }

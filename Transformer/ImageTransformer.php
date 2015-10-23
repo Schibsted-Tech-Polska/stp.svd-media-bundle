@@ -2,6 +2,8 @@
 
 namespace Svd\MediaBundle\Transformer;
 
+use Imagick;
+
 /**
  * Transformer
  */
@@ -22,10 +24,10 @@ class ImageTransformer
     /**
      * Construct
      *
-     * @param string  $folder
-     * @param boolean $isDefault
-     * @param float   $ratio
-     * @param integer $size
+     * @param string  $folder    folder
+     * @param boolean $isDefault is default
+     * @param float   $ratio     ratio
+     * @param integer $size      size
      */
     public function __construct($folder, $isDefault, $ratio = null, $size = null)
     {
@@ -73,5 +75,80 @@ class ImageTransformer
     public function getSize()
     {
         return $this->size;
+    }
+
+    /**
+     * Transform
+     *
+     * @param string $filePath file path
+     *
+     * @return string
+     */
+    public function transform($filePath)
+    {
+        $im = new Imagick($filePath);
+
+        $ret = null;
+
+        if ($this->ratio) {
+            $im = $this->cropImage($im);
+        }
+        if ($this->size) {
+            $im = $this->resizeImage($im);
+        }
+
+        $ret = $im->getImageBlob();
+
+        return $ret;
+    }
+
+    /**
+     * Crop image
+     *
+     * @param Imagick $im im
+     *
+     * @return Imagick
+     */
+    public function cropImage(Imagick $im)
+    {
+        $originalWidth = $im->getImageWidth();
+        $originalHeight = $im->getImageHeight();
+
+        $targetWidth = $targetHeight = max($originalWidth, $originalHeight);
+
+        if ($this->ratio < 1) {
+            $targetWidth = $targetHeight * $this->ratio;
+        } else {
+            $targetHeight = $targetWidth / $this->ratio;
+        }
+
+        $im->cropThumbnailImage($targetWidth, $targetHeight);
+
+        return $im;
+    }
+
+    /**
+     * Resize image
+     *
+     * @param Imagick $im im
+     *
+     * @return Imagick
+     */
+    public function resizeImage(Imagick $im)
+    {
+        $originalWidth = $im->getImageWidth();
+        $originalHeight = $im->getImageHeight();
+
+        if ($originalWidth > $originalHeight) {
+            $targetWidth = $this->size;
+            $targetHeight = 0;
+        } else {
+            $targetWidth = 0;
+            $targetHeight = $this->size;
+        }
+
+        $im->scaleImage($targetWidth, $targetHeight);
+
+        return $im;
     }
 }

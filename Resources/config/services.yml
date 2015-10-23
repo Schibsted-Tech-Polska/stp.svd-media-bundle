@@ -17,7 +17,6 @@ services:
 
     svd_media.listener.upload:
         calls:
-            -                           [setFilesystem, [@knp_gaufrette.filesystem_map]]
             -                           [setMediaManager, [@svd_media.manager.media]]
         class:                          Svd\MediaBundle\EventListener\UploadListener
         tags:

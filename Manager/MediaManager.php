@@ -4,6 +4,7 @@ namespace Svd\MediaBundle\Manager;
 
 use Gaufrette\Filesystem;
 use Knp\Bundle\GaufretteBundle\FilesystemMap;
+use Svd\MediaBundle\Entity\File;
 use Svd\MediaBundle\Transformer\ImageTransformer;
 
 /**
@@ -90,7 +91,7 @@ class MediaManager
     /**
      * Get transformers
      *
-     * @return array
+     * @return ImageTransformer[]
      */
     public function getTransformers()
     {
@@ -115,6 +116,16 @@ class MediaManager
     }
 
     /**
+     * Get tmp path
+     *
+     * @return string
+     */
+    public function getTmpPath()
+    {
+        return sys_get_temp_dir() . '/';
+    }
+
+    /**
      * Get default transformer
      *
      * @return ImageTransformer
@@ -122,5 +133,22 @@ class MediaManager
     public function getDefaultTransformer()
     {
         return $this->transformers[$this->defaultTransformer];
+    }
+
+    /**
+     * Upload file
+     *
+     * @param File $file file
+     */
+    public function uploadFile(File $file)
+    {
+        foreach ($this->getTransformers() as $transformer) {
+            $name = $transformer->getFolder();
+            $filePath = $name . '/' . $file->getFilename();
+
+            $newImage = $transformer->transform($this->getTmpPath() . $file->getFilename());
+
+            $this->adapter->write($filePath, $newImage);
+        }
     }
 }
