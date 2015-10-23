@@ -140,14 +140,27 @@ class MediaManager
      *
      * @param File $file file
      */
-    public function uploadFile(File $file)
+    public function uploadFile(File $file, $replace = false)
     {
         foreach ($this->getTransformers() as $transformer) {
+            $adapter = $this->adapter->getAdapter();
             $filePath = $transformer->getFolder() . '/' . $file->getFilename();
+
+            if ($adapter->exists($filePath) && !$replace) {
+                continue;
+            }
 
             $newImage = $transformer->transform($this->getTmpPath() . $file->getFilename());
 
+            if ($adapter->exists($filePath) && $replace) {
+                $adapter->delete($filePath);
+            }
+
             $this->adapter->write($filePath, $newImage);
+
+            if ($adapter instanceof MetadataSupporter) {
+                $adapter->setMetadata($filePath, ['contentType' => $file->getMimeType()]);
+            }
         }
     }
 }
