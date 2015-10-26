@@ -1,5 +1,5 @@
 {
-    "name": "svd/media-bundle",
+    "name": "schibsted-tech-polska/svd-media-bundle",
     "description": "Bundle to manage images",
     "keywords": ["svd", "media", "bundle", "images"],
     "license": "MIT",
