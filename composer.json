@@ -1,0 +1,22 @@
+{
+    "name": "svd/media-bundle",
+    "description": "Bundle to manage images",
+    "keywords": ["svd", "media", "bundle", "images"],
+    "license": "MIT",
+
+    "autoload": {
+        "psr-0": {
+            "Svd\\MediaBundle": ""
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    },
+    "require": {
+        "knplabs/gaufrette": "~0.2@dev",
+        "knplabs/knp-gaufrette-bundle": "~0.2@dev"
+    },
+    "target-dir": "Svd/MediaBundle"
+}
