@@ -2,6 +2,7 @@
 
 namespace Svd\MediaBundle\Manager;
 
+use Gaufrette\Adapter\MetadataSupporter;
 use Gaufrette\Filesystem;
 use Knp\Bundle\GaufretteBundle\FilesystemMap;
 use Svd\MediaBundle\Entity\File;
@@ -156,11 +157,11 @@ class MediaManager
                 $adapter->delete($filePath);
             }
 
-            $this->adapter->write($filePath, $newImage);
-
             if ($adapter instanceof MetadataSupporter) {
                 $adapter->setMetadata($filePath, ['contentType' => $file->getMimeType()]);
             }
+
+            $this->adapter->write($filePath, $newImage);
         }
     }
 }
