@@ -55,9 +55,8 @@ class Configuration implements ConfigurationInterface
                         ->beforeNormalization()
                         ->ifString()
                         ->then(function ($value) {
-                            $ratio = explode('/', $value);
-                            if (preg_match('#^\d+\/\d+$#', $value) && isset($ratio[0]) && isset($ratio[1])) {
-                                $value = $ratio[0] / $ratio[1];
+                            if (preg_match('#^(\d+)\s*\/\s*(\d+)$#', $value, $matches)) {
+                                $value = $matches[1] / $matches[2];
                             }
                             return $value;
                         })
