@@ -26,6 +26,8 @@ Svd\MediaBundle\Entity\File:
         usagesCount:
             column:                     usages_count
             nullable:                   true
+            options:
+                default:                0
             type:                       integer
         size:
             nullable:                   true
