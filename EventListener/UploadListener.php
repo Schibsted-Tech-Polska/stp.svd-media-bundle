@@ -40,6 +40,7 @@ class UploadListener
         if ($file instanceof File) {
             $this->mediaManager->uploadFile($file);
             $file->setStatus(File::STATUS_ACTIVE);
+            $file->setUsagesCount($file->getUsagesCount()+1);
         }
     }
 }

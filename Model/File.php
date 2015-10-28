@@ -115,7 +115,7 @@ class File implements ModelInterface
      *
      * @return integer
      */
-    public function getType()
+    public function getUsagesCount()
     {
         return $this->usagesCount;
     }
@@ -127,7 +127,7 @@ class File implements ModelInterface
      *
      * @return self
      */
-    public function setType($usagesCount)
+    public function setUsagesCount($usagesCount)
     {
         $this->usagesCount = $usagesCount;
 
