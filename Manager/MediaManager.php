@@ -139,7 +139,8 @@ class MediaManager
     /**
      * Upload file
      *
-     * @param File $file file
+     * @param File $file    file
+     * @param bool $replace replace
      */
     public function uploadFile(File $file, $replace = false)
     {
@@ -162,6 +163,23 @@ class MediaManager
             }
 
             $this->adapter->write($filePath, $newImage);
+        }
+    }
+
+    /**
+     * Delete file
+     *
+     * @param File $file file
+     */
+    public function deleteFile(File $file)
+    {
+        foreach ($this->getTransformers() as $transformer) {
+            $adapter = $this->adapter->getAdapter();
+            $filePath = $transformer->getFolder() . '/' . $file->getFilename();
+
+            if ($adapter->exists($filePath)) {
+                $adapter->delete($filePath);
+            }
         }
     }
 }
