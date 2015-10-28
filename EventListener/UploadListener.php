@@ -72,6 +72,21 @@ class UploadListener
     }
 
     /**
+     * Pre soft delete
+     * 
+     * @param LifecycleEventArgs $event event
+     */
+    public function preSoftDelete(LifecycleEventArgs $event)
+    {
+        $em = $event->getEntityManager();
+        $uow = $em->getUnitOfWork();
+
+        foreach ($this->findFilesInEntity($uow, $event->getEntity()) as $file) {
+            $this->decreaseUsagesCount($em, $file);
+        }
+    }
+
+    /**
      * Find files in entity
      *
      * @param UnitOfWork $uow    unit of work
