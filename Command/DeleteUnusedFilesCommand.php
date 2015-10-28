@@ -32,12 +32,11 @@ class DeleteUnusedFilesCommand extends BaseCommand
         $mediaManager = $this->getContainer()
             ->get('svd_media.manager.media');
 
-        $files = $fileRepository->getBy([
-            'usagesCount' => 0,
-        ]);
+        $files = $fileRepository->iterateByNotUsed();
 
-        /** @var File $file */
         foreach ($files as $file) {
+            /** @var File $file */
+            $file = current($file);
             $mediaManager->deleteFile($file);
             $fileRepository->delete($file, true);
 
