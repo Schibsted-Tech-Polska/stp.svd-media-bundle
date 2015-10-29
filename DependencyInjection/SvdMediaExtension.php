@@ -67,8 +67,20 @@ class SvdMediaExtension extends Extension implements PrependExtensionInterface
         $container->setDefinition('svd_media.manager.media', $def);
     }
 
+    /**
+     * Prepend
+     *
+     * @param ContainerBuilder $container container
+     */
     public function prepend(ContainerBuilder $container)
     {
+        $twigConfig = $container->getExtensionConfig('twig')[0];
+
+        if (!isset($twigConfig['form_themes'])) {
+            $twigConfig['form_themes'] = [];
+        }
+        $twigConfig['form_themes'][] = 'SvdAdminBundle::_form_media.html.twig';
+        $container->prependExtensionConfig('twig', $twigConfig);
     }
 
     /**
