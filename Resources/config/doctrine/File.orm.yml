@@ -23,9 +23,12 @@ Svd\MediaBundle\Entity\File:
             column:                     mime_type
             nullable:                   true
             type:                       string
-        type:
+        usagesCount:
+            column:                     usages_count
             nullable:                   true
-            type:                       string
+            options:
+                default:                0
+            type:                       integer
         size:
             nullable:                   true
             type:                       integer

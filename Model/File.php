@@ -32,8 +32,8 @@ class File implements ModelInterface
     /** @var string */
     protected $mimeType;
 
-    /** @var string */
-    protected $type;
+    /** @var integer */
+    protected $usagesCount;
 
     /** @var integer */
     protected $size;
@@ -111,25 +111,25 @@ class File implements ModelInterface
     }
 
     /**
-     * Get type
+     * Get usages count
      *
-     * @return string
+     * @return integer
      */
-    public function getType()
+    public function getUsagesCount()
     {
-        return $this->type;
+        return $this->usagesCount;
     }
 
     /**
-     * Set type
+     * Set usages count
      *
-     * @param string $type type
+     * @param integer $usagesCount usages count
      *
      * @return self
      */
-    public function setType($type)
+    public function setUsagesCount($usagesCount)
     {
-        $this->type = $type;
+        $this->usagesCount = $usagesCount;
 
         return $this;
     }
