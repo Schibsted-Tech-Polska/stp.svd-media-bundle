@@ -58,6 +58,8 @@ class ImageValidator extends Validator
             file_put_contents($imagePath, $imageUrl);
 
             parent::validate($imagePath, $constraint);
+
+            unlink($imagePath);
         }
     }
 }
