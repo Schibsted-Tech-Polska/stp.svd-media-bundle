@@ -3,6 +3,7 @@
 namespace Svd\MediaBundle\Validator\Constraints;
 
 use Svd\MediaBundle\Model\File;
+use Svd\MediaBundle\Twig\MediaUrlExtension;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\ImageValidator as Validator;
 
@@ -27,13 +28,14 @@ class ImageValidator extends Validator
 
         return $this;
     }
+
     /**
      * {@inheritdoc}
      */
     public function validate($value, Constraint $constraint)
     {
         if ($value instanceof File && $value->getStatus() == File::STATUS_WAITING) {
-            $imagePath = sys_get_temp_dir() . '/' . $value->getFilename();
+            $imagePath = $this->mediaUrlExtension->getMediaUrl($value->getFilename());
             parent::validate($imagePath, $constraint);
         }
     }
