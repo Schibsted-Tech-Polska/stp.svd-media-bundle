@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Svd\MediaBundle\Entity\File as FileEntity;
 
 /**
  * Controller
@@ -24,6 +25,8 @@ class FileController extends Controller
      */
     public function uploadAction(Request $request)
     {
+        $em = $this->get('doctrine')
+            ->getManager();
         $file = $this->getFile($request->files);
         $fs = new Filesystem();
 
@@ -31,8 +34,18 @@ class FileController extends Controller
         $fs->copy($file->getPathname(), $tmpFilePath);
 
         $tmpFile = new File($tmpFilePath);
+        $newFile = new FileEntity();
+        $newFile->setFilename($tmpFile->getFilename());
+        $newFile->setStatus(FileEntity::STATUS_WAITING);
+        $newFile->setMimeType($tmpFile->getMimeType());
+        $newFile->setSize($tmpFile->getSize());
+        $newFile->setUsagesCount(0);
+
+        $em->persist($newFile);
+        $em->flush();
 
         $response = [
+            'id' => $newFile->getId(),
             'pathname' => $tmpFile->getPathname(),
             'originalName' => $file->getClientOriginalName(),
             'originalExtension' => $file->getClientOriginalExtension(),

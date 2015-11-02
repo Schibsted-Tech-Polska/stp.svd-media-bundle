@@ -38,12 +38,12 @@ class UploadListener
      */
     public function prePersist(LifecycleEventArgs $event)
     {
-        $file = $event->getEntity();
-        if ($file instanceof File) {
-            $this->mediaManager->uploadFile($file);
-            $file->setStatus(File::STATUS_ACTIVE);
-            $file->setUsagesCount($file->getUsagesCount()+1);
-        }
+//        $file = $event->getEntity();
+//        if ($file instanceof File) {
+//            $this->mediaManager->uploadFile($file);
+//            $file->setStatus(File::STATUS_ACTIVE);
+//            $file->setUsagesCount($file->getUsagesCount()+1);
+//        }
     }
 
     /**

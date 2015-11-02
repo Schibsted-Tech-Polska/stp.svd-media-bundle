@@ -87,14 +87,14 @@ class IdToFileTransformer implements DataTransformerInterface
                     'id' => $id,
                 ]);
             } elseif (is_file($id)) {
-                $file = new File($id);
-                $newFile = new FileEntity();
-                $newFile->setFilename($file->getFilename());
-                $newFile->setStatus(FileEntity::STATUS_WAITING);
-                $newFile->setMimeType($file->getMimeType());
-                $newFile->setSize($file->getSize());
-
-                $ret = $newFile;
+//                $file = new File($id);
+//                $newFile = new FileEntity();
+//                $newFile->setFilename($file->getFilename());
+//                $newFile->setStatus(FileEntity::STATUS_WAITING);
+//                $newFile->setMimeType($file->getMimeType());
+//                $newFile->setSize($file->getSize());
+//
+//                $ret = $newFile;
             }
         }
 
