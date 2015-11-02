@@ -79,7 +79,7 @@ class SvdMediaExtension extends Extension implements PrependExtensionInterface
         if (!isset($twigConfig['form_themes'])) {
             $twigConfig['form_themes'] = [];
         }
-        $twigConfig['form_themes'][] = 'SvdAdminBundle::_form_media.html.twig';
+        $twigConfig['form_themes'][] = 'SvdMediaBundle:Macros:media_field.html.twig';
         $container->prependExtensionConfig('twig', $twigConfig);
     }
 

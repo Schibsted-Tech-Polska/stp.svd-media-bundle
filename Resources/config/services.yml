@@ -22,13 +22,21 @@ services:
         tags:
             -
                 name:                   doctrine.event_listener
-                event:                  prePersist
-            -
-                name:                   doctrine.event_listener
                 event:                  onFlush
             -
                 name:                   doctrine.event_listener
                 event:                  preSoftDelete
+
+    svd_media.manager.media:
+        arguments:
+            defaultTransformer:         default
+        class:                          Svd\MediaBundle\Manager\MediaManager
+
+    svd_media.transformer.id_to_file:
+        calls:
+            -                           [setFileRepository, [@svd_media.file.repository]]
+            -                           [setMediaUrlExtension, [@svd_media.twig_extension.media_url]]
+        class:                          Svd\MediaBundle\Form\DataTransformer\IdToFileTransformer
 
     svd_media.twig_extension.media_url:
         calls:
@@ -39,13 +47,12 @@ services:
             -
                 name:                   twig.extension
 
-    svd_media.transformer.id_to_file:
+    svd_media.validator.image:
+        class:                          Svd\MediaBundle\Validator\Constraints\ImageValidator
         calls:
-            -                           [setFileRepository, [@svd_media.file.repository]]
             -                           [setMediaUrlExtension, [@svd_media.twig_extension.media_url]]
-        class:                          Svd\MediaBundle\Form\DataTransformer\IdToFileTransformer
-
-    svd_media.manager.media:
-        arguments:
-            defaultTransformer:         default
-        class:                          Svd\MediaBundle\Manager\MediaManager
+            -                           [setMediaManager, [@svd_media.manager.media]]
+        tags:
+            -
+                name:                   validator.constraint_validator
+                alias:                  svdmedia_image_validator
