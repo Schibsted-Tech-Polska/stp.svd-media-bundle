@@ -32,21 +32,6 @@ class UploadListener
     }
 
     /**
-     * On upload
-     *
-     * @param LifecycleEventArgs $event event
-     */
-    public function prePersist(LifecycleEventArgs $event)
-    {
-//        $file = $event->getEntity();
-//        if ($file instanceof File) {
-//            $this->mediaManager->uploadFile($file);
-//            $file->setStatus(File::STATUS_ACTIVE);
-//            $file->setUsagesCount($file->getUsagesCount()+1);
-//        }
-    }
-
-    /**
      * On flush
      *
      * @param OnFlushEventArgs $event event
@@ -60,6 +45,9 @@ class UploadListener
             foreach ($uow->getEntityChangeSet($entity) as $changeSet) {
                 if ($changeSet[0] instanceof File) {
                     $this->decreaseUsagesCount($em, $changeSet[0]);
+                }
+                if ($changeSet[1] instanceof File) {
+                    $this->increaseUsagesCount($em, $changeSet[1]);
                 }
             }
         }
@@ -118,6 +106,20 @@ class UploadListener
     protected function decreaseUsagesCount(EntityManager $em, File $file)
     {
         $file->setUsagesCount($file->getUsagesCount()-1);
+        $md = $em->getClassMetadata('Svd\MediaBundle\Entity\File');
+        $em->getUnitOfWork()->recomputeSingleEntityChangeSet($md, $file);
+        $em->persist($file);
+    }
+
+    /**
+     * Increase usages count
+     *
+     * @param EntityManager $em   em
+     * @param File          $file file
+     */
+    protected function increaseUsagesCount(EntityManager $em, File $file)
+    {
+        $file->setUsagesCount($file->getUsagesCount()+1);
         $md = $em->getClassMetadata('Svd\MediaBundle\Entity\File');
         $em->getUnitOfWork()->recomputeSingleEntityChangeSet($md, $file);
         $em->persist($file);

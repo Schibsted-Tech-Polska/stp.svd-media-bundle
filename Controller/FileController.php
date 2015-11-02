@@ -27,6 +27,7 @@ class FileController extends Controller
     {
         $em = $this->get('doctrine')
             ->getManager();
+        $mediaManager = $this->get('svd_media.manager.media');
         $file = $this->getFile($request->files);
         $fs = new Filesystem();
 
@@ -40,6 +41,8 @@ class FileController extends Controller
         $newFile->setMimeType($tmpFile->getMimeType());
         $newFile->setSize($tmpFile->getSize());
         $newFile->setUsagesCount(0);
+
+        $mediaManager->uploadFile($newFile);
 
         $em->persist($newFile);
         $em->flush();
