@@ -51,6 +51,7 @@ services:
         class:                          Svd\MediaBundle\Validator\Constraints\ImageValidator
         calls:
             -                           [setMediaUrlExtension, [@svd_media.twig_extension.media_url]]
+            -                           [setMediaManager, [@svd_media.manager.media]]
         tags:
             -
                 name:                   validator.constraint_validator
