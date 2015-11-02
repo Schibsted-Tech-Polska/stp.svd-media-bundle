@@ -11,6 +11,22 @@ use Symfony\Component\Validator\Constraints\ImageValidator as Validator;
  */
 class ImageValidator extends Validator
 {
+    /** @var MediaUrlExtension */
+    protected $mediaUrlExtension;
+
+    /**
+     * Set media url extension
+     *
+     * @param MediaUrlExtension $mediaUrlExtension media url extension
+     *
+     * @return self
+     */
+    public function setMediaUrlExtension(MediaUrlExtension $mediaUrlExtension)
+    {
+        $this->mediaUrlExtension = $mediaUrlExtension;
+
+        return $this;
+    }
     /**
      * {@inheritdoc}
      */

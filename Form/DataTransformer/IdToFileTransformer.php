@@ -2,7 +2,6 @@
 
 namespace Svd\MediaBundle\Form\DataTransformer;
 
-use Svd\MediaBundle\Entity\File as FileEntity;
 use Svd\MediaBundle\Entity\Repository\FileRepository;
 use Svd\MediaBundle\Model\File as ModelFile;
 use Svd\MediaBundle\Twig\MediaUrlExtension;
@@ -86,15 +85,6 @@ class IdToFileTransformer implements DataTransformerInterface
                 $ret = $this->fileRepository->getOneBy([
                     'id' => $id,
                 ]);
-            } elseif (is_file($id)) {
-//                $file = new File($id);
-//                $newFile = new FileEntity();
-//                $newFile->setFilename($file->getFilename());
-//                $newFile->setStatus(FileEntity::STATUS_WAITING);
-//                $newFile->setMimeType($file->getMimeType());
-//                $newFile->setSize($file->getSize());
-//
-//                $ret = $newFile;
             }
         }
 

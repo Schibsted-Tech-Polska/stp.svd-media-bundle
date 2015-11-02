@@ -46,3 +46,12 @@ services:
         arguments:
             defaultTransformer:         default
         class:                          Svd\MediaBundle\Manager\MediaManager
+
+    svd_media.validator.image:
+        class:                          Svd\MediaBundle\Validator\Constraints\ImageValidator
+        calls:
+            -                           [setMediaUrlExtension, [@svd_media.twig_extension.media_url]]
+        tags:
+            -
+                name:                   validator.constraint_validator
+                alias:                  svdmedia_image_validator
