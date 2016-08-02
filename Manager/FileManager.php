@@ -20,7 +20,7 @@ class FileManager
     protected $mediaManager;
 
     /** @var File */
-    protected $tempFile;
+    protected $tmpFile;
 
     /**
      * Set entity manager
@@ -64,10 +64,10 @@ class FileManager
         $this->addTempFile($file);
 
         $newFile = new FileEntity();
-        $newFile->setFilename($this->tempFile->getFilename());
+        $newFile->setFilename($this->tmpFile->getFilename());
         $newFile->setStatus(FileEntity::STATUS_WAITING);
-        $newFile->setMimeType($this->tempFile->getMimeType());
-        $newFile->setSize($this->tempFile->getSize());
+        $newFile->setMimeType($this->tmpFile->getMimeType());
+        $newFile->setSize($this->tmpFile->getSize());
         $newFile->setUsagesCount(0);
 
         $this->mediaManager->uploadFile($newFile);
@@ -77,7 +77,7 @@ class FileManager
 
         $savedFile = [
             'id' => $newFile->getId(),
-            'pathname' => $this->tempFile->getPathname(),
+            'pathname' => $this->tmpFile->getPathname(),
             'originalName' => $file->getClientOriginalName(),
             'originalExtension' => $file->getClientOriginalExtension(),
         ];
@@ -125,7 +125,7 @@ class FileManager
         $path = sys_get_temp_dir() . '/' . $this->generateName($file);
         $filesystem->copy($file->getPathname(), $path);
 
-        $this->tempFile  = new File($path);
+        $this->tmpFile  = new File($path);
 
         return $this;
     }
