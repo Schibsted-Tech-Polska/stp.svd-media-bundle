@@ -27,6 +27,12 @@ services:
                 name:                   doctrine.event_listener
                 event:                  preSoftDelete
 
+    svd_media.manager.file:
+        calls:
+            -                           [setEntityManager, [@doctrine.orm.entity_manager]]
+            -                           [setMediaManager, [@svd_media.manager.media]]
+        class:                          Svd\MediaBundle\Manager\FileManager
+
     svd_media.manager.media:
         arguments:
             defaultTransformer:         default
