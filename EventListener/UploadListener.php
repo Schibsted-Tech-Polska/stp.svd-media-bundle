@@ -7,30 +7,14 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\UnitOfWork;
 use Svd\MediaBundle\Entity\File;
-use Svd\MediaBundle\Manager\MediaManager;
 
 /**
  * EventListener
+ *
+ * @TODO: needs to be repaired (it doesn't work properly)
  */
 class UploadListener
 {
-    /** @var MediaManager */
-    protected $mediaManager;
-
-    /**
-     * Set media manager
-     *
-     * @param MediaManager $mediaManager media manager
-     *
-     * @return self
-     */
-    public function setMediaManager(MediaManager $mediaManager)
-    {
-        $this->mediaManager = $mediaManager;
-
-        return $this;
-    }
-
     /**
      * On flush
      *
@@ -105,10 +89,7 @@ class UploadListener
      */
     protected function decreaseUsagesCount(EntityManager $em, File $file)
     {
-        $file->setUsagesCount($file->getUsagesCount()-1);
-        $md = $em->getClassMetadata('Svd\MediaBundle\Entity\File');
-        $em->getUnitOfWork()->recomputeSingleEntityChangeSet($md, $file);
-        $em->persist($file);
+        $this->changeUsagesCount($em, $file, -1);
     }
 
     /**
@@ -119,9 +100,23 @@ class UploadListener
      */
     protected function increaseUsagesCount(EntityManager $em, File $file)
     {
-        $file->setUsagesCount($file->getUsagesCount()+1);
-        $md = $em->getClassMetadata('Svd\MediaBundle\Entity\File');
-        $em->getUnitOfWork()->recomputeSingleEntityChangeSet($md, $file);
+        $this->changeUsagesCount($em, $file, 1);
+    }
+
+    /**
+     * Change usages count
+     *
+     * @param EntityManager $em    em
+     * @param File          $file  file
+     * @param int           $value value
+     */
+    protected function changeUsagesCount(EntityManager $em, File $file, $value)
+    {
+        $classMetadata = $em->getClassMetadata('Svd\MediaBundle\Entity\File');
+        $file->setUsagesCount($file->getUsagesCount() + $value);
+
+        $em->getUnitOfWork()
+            ->recomputeSingleEntityChangeSet($classMetadata, $file);
         $em->persist($file);
     }
 }

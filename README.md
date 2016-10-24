@@ -2,15 +2,8 @@
 ##Configuration
 ```yaml
 svd_media:
-    adapter: gaufrette_service_id
-    transformers:
-        default:
-            ratio: 16/9
-            size: 1600
-            is_default: true
-        thumbnail:
-            ratio: 16/9
-            size: 720
+    adapter:                            gaufrette_service_id
+    base_url:                           file_folder_url
 ```
 
 ##Usage
@@ -27,12 +20,11 @@ To form type add `media` field
 ```php
 public function buildForm(FormBuilderInterface $builder, array $options)
 {
-    $builder->add('file', 'media')
+    $builder->add('file', MediaType::class)
 }
 ```
 
-If you add new transformation to configuration, you can run command to transform all images to new type
+To remove unused media from storage, run command:
 ```
-app/console transform:images
+app/console media:remove-unused
 ```
-Also you can replace existing files just adding `-r` to command

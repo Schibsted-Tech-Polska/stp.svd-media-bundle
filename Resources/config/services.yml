@@ -8,7 +8,7 @@ services:
 
     svd_media.form_type.media:
         calls:
-            -                           [setIdToFileTransformer, [@svd_media.transformer.id_to_file]]
+            -                           [setIdToFileTransformer, ["@svd_media.transformer.id_to_file"]]
         class:                          Svd\MediaBundle\Form\Type\MediaType
         tags:
             -
@@ -16,8 +16,6 @@ services:
                 alias:                  media
 
     svd_media.listener.upload:
-        calls:
-            -                           [setMediaManager, [@svd_media.manager.media]]
         class:                          Svd\MediaBundle\EventListener\UploadListener
         tags:
             -
@@ -29,24 +27,22 @@ services:
 
     svd_media.manager.file:
         calls:
-            -                           [setEntityManager, [@doctrine.orm.entity_manager]]
-            -                           [setMediaManager, [@svd_media.manager.media]]
+            -                           [setRemoteFilesystem, ["@knp_gaufrette.filesystem_map", "%svd_media.adapter%"]]
+            -                           [setFileRepository, ["@svd_media.repository.file"]]
         class:                          Svd\MediaBundle\Manager\FileManager
-
-    svd_media.manager.media:
-        arguments:
-            defaultTransformer:         default
-        class:                          Svd\MediaBundle\Manager\MediaManager
 
     svd_media.transformer.id_to_file:
         calls:
-            -                           [setFileRepository, [@svd_media.file.repository]]
-            -                           [setMediaUrlExtension, [@svd_media.twig_extension.media_url]]
+            -                           [setFileRepository, ["@svd_media.repository.file"]]
+            -                           [setMediaUrlExtension, ["@svd_media.twig_extension.media_url"]]
         class:                          Svd\MediaBundle\Form\DataTransformer\IdToFileTransformer
 
     svd_media.twig_extension.media_url:
+        arguments:
+            -                           "%svd_media.base_url%"
+            -                           "%svd_media.liip_imagine.filter_mapper%"
         calls:
-            -                           [setMediaBaseUrl, [%svd_media.base_url%]]
+            -                           [setLiipImagineTwigExtension, ["%svd_media.liip_imagine.twig_extension%"]]
         class:                          Svd\MediaBundle\Twig\MediaUrlExtension
         public:                         false
         tags:
@@ -54,10 +50,9 @@ services:
                 name:                   twig.extension
 
     svd_media.validator.image:
-        class:                          Svd\MediaBundle\Validator\Constraints\ImageValidator
         calls:
-            -                           [setMediaUrlExtension, [@svd_media.twig_extension.media_url]]
-            -                           [setMediaManager, [@svd_media.manager.media]]
+            -                           [setMediaUrlExtension, ["@svd_media.twig_extension.media_url"]]
+        class:                          Svd\MediaBundle\Validator\Constraints\ImageValidator
         tags:
             -
                 name:                   validator.constraint_validator

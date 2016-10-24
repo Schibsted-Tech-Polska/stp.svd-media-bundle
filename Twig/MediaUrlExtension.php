@@ -2,6 +2,7 @@
 
 namespace Svd\MediaBundle\Twig;
 
+use Liip\ImagineBundle\Templating\ImagineExtension;
 use Twig_Extension;
 use Twig_SimpleFilter;
 
@@ -11,16 +12,38 @@ use Twig_SimpleFilter;
 class MediaUrlExtension extends Twig_Extension
 {
     /** @var string */
-    protected $mediaBaseUrl;
+    protected $baseUrl;
+
+    /** @var array */
+    protected $liipImagineFilterMapper;
+
+    /** @var ImagineExtension|null */
+    protected $liipImagineTwigExtension;
 
     /**
-     * Set media base url
+     * Constructor
      *
-     * @param String $mediaBaseUrl
+     * @param string $baseUrl                 base URL
+     * @param array  $liipImagineFilterMapper filter mapper
      */
-    public function setMediaBaseUrl($mediaBaseUrl)
+    public function __construct($baseUrl, array $liipImagineFilterMapper = [])
     {
-        $this->mediaBaseUrl = rtrim($mediaBaseUrl, '/');
+        $this->baseUrl = rtrim($baseUrl, '/');
+        $this->liipImagineFilterMapper = $liipImagineFilterMapper;
+    }
+
+    /**
+     * Set Liip Imagine Twig extension
+     *
+     * @param ImagineExtension|null $liipImagineTwigExtension Liip Imagine Twig extension
+     *
+     * @return self
+     */
+    public function setLiipImagineTwigExtension($liipImagineTwigExtension)
+    {
+        $this->liipImagineTwigExtension = $liipImagineTwigExtension;
+
+        return $this;
     }
 
     /**
@@ -36,15 +59,24 @@ class MediaUrlExtension extends Twig_Extension
     }
 
     /**
-     * Get media url
+     * Get media URL
      *
-     * @param string $filename filename
+     * @param string      $fileName file name
+     * @param string|null $filter   filter
      *
      * @return string
      */
-    public function getMediaUrl($filename, $dir = 'default')
+    public function getMediaUrl($fileName, $filter = null)
     {
-        return sprintf('%s/%s/%s', $this->mediaBaseUrl, $dir, $filename);
+        $fileUrl = sprintf('%s/%s', $this->baseUrl, $fileName);
+        if (isset($this->liipImagineTwigExtension) && !empty($filter)) {
+            if (array_key_exists($filter, $this->liipImagineFilterMapper)) {
+                $filter = $this->liipImagineFilterMapper[$filter];
+            }
+            $fileUrl = $this->liipImagineTwigExtension->filter($fileUrl, $filter);
+        }
+
+        return $fileUrl;
     }
 
     /**

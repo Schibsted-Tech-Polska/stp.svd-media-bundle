@@ -33,7 +33,7 @@ class File implements ModelInterface
     protected $mimeType;
 
     /** @var integer */
-    protected $usagesCount;
+    protected $usagesCount = 0;
 
     /** @var integer */
     protected $size;

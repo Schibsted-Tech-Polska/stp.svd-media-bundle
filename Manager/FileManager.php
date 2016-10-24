@@ -2,50 +2,49 @@
 
 namespace Svd\MediaBundle\Manager;
 
-use Doctrine\ORM\EntityManager;
+use Gaufrette\Adapter\Local as LocalAdapter;
+use Gaufrette\Adapter\MetadataSupporter;
+use Gaufrette\Filesystem;
+use Knp\Bundle\GaufretteBundle\FilesystemMap;
 use Svd\MediaBundle\Entity\File as FileEntity;
-use Svd\MediaBundle\Manager\MediaManager;
-use Symfony\Component\Filesystem\Filesystem;
+use Svd\MediaBundle\Entity\Repository\FileRepository;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
-use Symfony\Component\HttpFoundation\Request;
 
 class FileManager
 {
-    /** @var  EntityManager */
-    protected $entityManager;
+    /** @var Filesystem */
+    protected $remoteFilesystem;
 
-    /** @var MediaManager */
-    protected $mediaManager;
-
-    /** @var File */
-    protected $tmpFile;
+    /** @var FileRepository */
+    protected $fileRepository;
 
     /**
-     * Set entity manager
+     * Set remote filesystem
      *
-     * @param EntityManager $entityManager entity manager
+     * @param FilesystemMap $map            map
+     * @param string        $filesystemName filesystem name
      *
      * @return self
      */
-    public function setEntityManager(EntityManager $entityManager)
+    public function setRemoteFilesystem(FilesystemMap $map, $filesystemName)
     {
-        $this->entityManager = $entityManager;
+        $this->remoteFilesystem = $map->get($filesystemName);
 
         return $this;
     }
 
     /**
-     * Set media manager
+     * Set file repository
      *
-     * @param MediaManager $mediaManager media manager
+     * @param FileRepository $fileRepository file repository
      *
      * @return self
      */
-    public function setMediaManager(MediaManager $mediaManager)
+    public function setFileRepository(FileRepository $fileRepository)
     {
-        $this->mediaManager = $mediaManager;
+        $this->fileRepository = $fileRepository;
 
         return $this;
     }
@@ -53,95 +52,118 @@ class FileManager
     /**
      * Save file
      *
-     * @param FileBag $bag file bag
+     * @param FileBag $fileBag file bag
      *
-     * @return array saved file information
+     * @return FileEntity
      */
-    public function saveFile(FileBag $bag)
+    public function saveFile(FileBag $fileBag)
     {
-        $file = $this->getFile($bag);
+        $uploadedFile = $this->getFirstUploadedFile($fileBag);
+        $file = $this->uploadFile($uploadedFile);
+        $this->fileRepository->insert($file, true);
 
-        $this->addTempFile($file);
-
-        $newFile = new FileEntity();
-        $newFile->setFilename($this->tmpFile->getFilename());
-        $newFile->setStatus(FileEntity::STATUS_WAITING);
-        $newFile->setMimeType($this->tmpFile->getMimeType());
-        $newFile->setSize($this->tmpFile->getSize());
-        $newFile->setUsagesCount(0);
-
-        $this->mediaManager->uploadFile($newFile);
-
-        $this->entityManager->persist($newFile);
-        $this->entityManager->flush();
-
-        $savedFile = [
-            'id' => $newFile->getId(),
-            'pathname' => $this->tmpFile->getPathname(),
-            'originalName' => $file->getClientOriginalName(),
-            'originalExtension' => $file->getClientOriginalExtension(),
-        ];
-
-        return $savedFile;
+        return $file;
     }
 
     /**
-     * Get files
+     * Remove file
      *
-     * @param FileBag $bag bag
+     * @param FileEntity $file file
+     */
+    public function removeFile(FileEntity $file)
+    {
+        $this->deleteFile($file);
+        $this->fileRepository->delete($file, true);
+    }
+
+    /**
+     * Get uploaded files
+     *
+     * @param FileBag $fileBag file bag
+     *
+     * @return UploadedFile[]
+     */
+    protected function getUploadedFiles(FileBag $fileBag)
+    {
+        $files = array_filter($fileBag->all(), function ($file) {
+            return $file instanceof UploadedFile;
+        });
+
+        return $files;
+    }
+
+    /**
+     * Get first uploaded file
+     *
+     * @param FileBag $fileBag file bag
      *
      * @return UploadedFile|null
      */
-    protected function getFile(FileBag $bag)
+    protected function getFirstUploadedFile(FileBag $fileBag)
     {
-        $files = [];
-        $fileBag = $bag->all();
-        foreach ($fileBag as $file) {
-            if (is_array($file) || null === $file) {
-                continue;
-            }
-            $files[] = $file;
-        }
+        $files = $this->getUploadedFiles($fileBag);
+        $firstFile = array_shift($files);
 
-        $ret = null;
-        if (count($files) > 0) {
-            $ret = $files[0];
-        }
-
-        return $ret;
-    }
-
-    /**
-     * Add temporary file
-     *
-     * @param $file
-     *
-     * @return self
-     */
-    protected function addTempFile(UploadedFile $file)
-    {
-        $filesystem = new Filesystem();
-
-        $path = sys_get_temp_dir() . '/' . $this->generateName($file);
-        $filesystem->copy($file->getPathname(), $path);
-
-        $this->tmpFile  = new File($path);
-
-        return $this;
+        return $firstFile;
     }
 
     /**
      * Generate name
      *
-     * @param UploadedFile $file file
+     * @param UploadedFile $uploadedFile uploaded file
      *
      * @return string
      */
-    protected function generateName(UploadedFile $file)
+    protected function generateName(UploadedFile $uploadedFile)
     {
-        $name = md5(microtime());
-        $name .= '.' . $file->getClientOriginalExtension();
+        $name = md5(microtime()) . '.' . $uploadedFile->getClientOriginalExtension();
 
         return $name;
+    }
+
+    /**
+     * Upload file
+     *
+     * @param UploadedFile $uploadedFile uploaded file
+     * @param bool         $replace      replace
+     *
+     * @return FileEntity
+     */
+    public function uploadFile(UploadedFile $uploadedFile, $replace = false)
+    {
+        $localFileSystem = new Filesystem(new LocalAdapter($uploadedFile->getPath()));
+        $file = new File($uploadedFile->getPathname());
+        $content = $localFileSystem->read($uploadedFile->getFilename());
+
+        $adapter = $this->remoteFilesystem->getAdapter();
+        $fileName = $this->generateName($uploadedFile);
+        if ($adapter instanceof MetadataSupporter) {
+            $adapter->setMetadata($fileName, [
+                'contentType' => $file->getMimeType(),
+            ]);
+        }
+        $this->remoteFilesystem->write($fileName, $content);
+
+        $fileEntity = new FileEntity();
+        $fileEntity->setFilename($fileName)
+            ->setMimeType($file->getMimeType())
+            ->setSize($file->getSize())
+            ->setStatus(FileEntity::STATUS_WAITING);
+
+        return $fileEntity;
+    }
+
+    /**
+     * Delete file
+     *
+     * @param FileEntity $file file
+     */
+    public function deleteFile(FileEntity $file)
+    {
+        $adapter = $this->remoteFilesystem->getAdapter();
+
+        if ($adapter->exists($file->getFilename())) {
+            $adapter->delete($file->getFilename());
+        }
     }
 }
