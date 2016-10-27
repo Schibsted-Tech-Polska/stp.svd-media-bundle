@@ -15,8 +15,7 @@
         }
     },
     "require": {
-        "knplabs/gaufrette": "~0.2@dev",
-        "knplabs/knp-gaufrette-bundle": "~0.2@dev"
+        "knplabs/knp-gaufrette-bundle": ">=0.2"
     },
     "target-dir": "Svd/MediaBundle"
 }
