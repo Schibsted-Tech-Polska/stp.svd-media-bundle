@@ -25,6 +25,12 @@ class UploadListener
         $em = $event->getEntityManager();
         $uow = $em->getUnitOfWork();
 
+        foreach ($uow->getScheduledEntityInsertions() as $entity) {
+            foreach ($this->findFilesInEntity($uow, $entity) as $file) {
+                $this->increaseUsagesCount($em, $file);
+            }
+        }
+
         foreach ($uow->getScheduledEntityUpdates() as $entity) {
             foreach ($uow->getEntityChangeSet($entity) as $changeSet) {
                 if ($changeSet[0] instanceof File) {
