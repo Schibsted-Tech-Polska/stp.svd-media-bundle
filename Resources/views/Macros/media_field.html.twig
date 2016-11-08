@@ -6,8 +6,8 @@
                     {{ block('media_item_widget') }}
                 {% endif %}
             </ul>
-            <div class="dropzone media-loader-dropzone{{ attr.class is defined ? ' ' ~ attr.class : '' }}" data-id="{{ id }}"
-                data-url="{{ path('media_file_upload') }}" data-limit="100">
+            <div class="dropzone media-loader-dropzone{{ attr.class is defined ? ' ' ~ attr.class : '' }}"
+                data-id="{{ id }}" data-url="{{ path('media_file_upload') }}" data-limit="100">
             </div>
         </div>
     </div>
@@ -16,7 +16,7 @@
 {%- block media_item_widget -%}
     {% spaceless %}
         <li class="media-loader-file">
-            <img src="{{ value.filename is defined ? value.filename|mediaUrl('thumbnail') : '' }}" alt="" class="media-loader-file-img">
+            <img src="{{ value.filename is defined ? value.filename|mediaUrl('admin_thumbnail') : '' }}" alt="" class="media-loader-file-img">
             <span class="media-loader-file-remove btn btn-small"><i class="icon icon-remove"></i></span>
             <input type="hidden" {{ block('widget_attributes') }} value="{{ value.id is defined ? value.id : '' }}"/>
         </li>

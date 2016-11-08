@@ -2,6 +2,7 @@
 
 namespace Svd\MediaBundle\Twig;
 
+use Svd\MediaBundle\Manager\MediaUrlManager;
 use Twig_Extension;
 use Twig_SimpleFilter;
 
@@ -10,17 +11,21 @@ use Twig_SimpleFilter;
  */
 class MediaUrlExtension extends Twig_Extension
 {
-    /** @var string */
-    protected $mediaBaseUrl;
+    /** @var MediaUrlManager */
+    protected $mediaUrlManager;
 
     /**
-     * Set media base url
+     * Set media URL manager
      *
-     * @param String $mediaBaseUrl
+     * @param MediaUrlManager $mediaUrlManager media URL manager
+     *
+     * @return self
      */
-    public function setMediaBaseUrl($mediaBaseUrl)
+    public function setMediaUrlManager(MediaUrlManager $mediaUrlManager)
     {
-        $this->mediaBaseUrl = rtrim($mediaBaseUrl, '/');
+        $this->mediaUrlManager = $mediaUrlManager;
+
+        return $this;
     }
 
     /**
@@ -36,15 +41,18 @@ class MediaUrlExtension extends Twig_Extension
     }
 
     /**
-     * Get media url
+     * Get media URL
      *
-     * @param string $filename filename
+     * @param string      $fileName file name
+     * @param string|null $filter   filter
      *
      * @return string
      */
-    public function getMediaUrl($filename, $dir = 'default')
+    public function getMediaUrl($fileName, $filter = null)
     {
-        return sprintf('%s/%s/%s', $this->mediaBaseUrl, $dir, $filename);
+        $fileUrl = $this->mediaUrlManager->getMediaUrl($fileName, $filter);
+
+        return $fileUrl;
     }
 
     /**

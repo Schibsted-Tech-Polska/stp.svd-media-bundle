@@ -62,8 +62,8 @@ class IdToFileTransformer implements DataTransformerInterface
             $ret = [
                 'id' => $file->getId(),
                 'filename' => $file->getFilename(),
-                'size' => $file->getSize(),
                 'mimetype' => $file->getMimeType(),
+                'size' => $file->getSize(),
                 'url' => $url,
             ];
         }

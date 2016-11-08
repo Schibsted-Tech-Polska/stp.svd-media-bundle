@@ -21,8 +21,10 @@ class FileController extends Controller
     public function uploadAction(Request $request)
     {
         $fileManager = $this->get('svd_media.manager.file');
-        $response = $fileManager->saveFile($request->files);
+        $file = $fileManager->saveFile($request->files);
 
-        return new JsonResponse($response);
+        return new JsonResponse([
+            'id' => $file->getId(),
+        ]);
     }
 }

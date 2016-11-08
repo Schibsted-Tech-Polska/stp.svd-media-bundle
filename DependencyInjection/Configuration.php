@@ -28,52 +28,22 @@ class Configuration implements ConfigurationInterface
                     ->isRequired()
                     ->cannotBeEmpty()
                 ->end()
-                ->append($this->addTransformersNode())
-            ->end();
-
-        return $treeBuilder;
-    }
-
-    /**
-     * Add Transformers node
-     *
-     * @return ArrayNodeDefinition
-     */
-    public function addTransformersNode()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('transformers');
-
-        $node
-            ->isRequired()
-            ->requiresAtLeastOneElement()
-            ->useAttributeAsKey('name')
-            ->prototype('array')
-                ->children()
-                    ->floatNode('ratio')
-                        ->defaultValue(null)
-                        ->beforeNormalization()
-                        ->ifString()
-                        ->then(function ($value) {
-                            if (preg_match('#^(\d+)\s*\/\s*(\d+)$#', $value, $matches)) {
-                                $value = $matches[1] / $matches[2];
-                            }
-                            return $value;
-                        })
+                ->scalarNode('base_url')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                ->end()
+                ->arrayNode('liip_imagine')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->variableNode('filter_mapper')
+                            ->defaultValue([
+                                'admin_thumbnail' => 'thumbnail',
+                            ])
                         ->end()
-                    ->end()
-                    ->integerNode('size')
-                        ->defaultValue(null)
-                    ->end()
-                    ->booleanNode('is_default')
-                        ->defaultFalse()
-                    ->end()
-                    ->scalarNode('folder')
-                        ->defaultValue(null)
                     ->end()
                 ->end()
             ->end();
 
-        return $node;
+        return $treeBuilder;
     }
 }

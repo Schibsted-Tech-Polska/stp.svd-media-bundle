@@ -23,7 +23,7 @@ class FileRepository extends EntityRepository implements BaseRepositoryInterface
     {
         $qb = $this->createQueryBuilder('f')
             ->select('f')
-            ->where('f.usagesCount = :count')
+            ->where('f.usagesCount <= :count')
             ->setParameter(':count', 0)
             ->getQuery();
 

@@ -45,33 +45,6 @@ class MediaType extends AbstractType
     }
 
     /**
-     * Build view
-     *
-     * @param FormView      $view    view
-     * @param FormInterface $form    form
-     * @param array         $options options
-     *
-     * @throws InvalidArgumentException
-     */
-    public function buildView(FormView $view, FormInterface $form, array $options)
-    {
-        if (!empty($options['ratio']) && !preg_match('#^\d+\:\d+$#', $options['ratio'])) {
-            throw new InvalidArgumentException('Bad format of ratio option. I should be i.e 16:9.');
-        }
-        $view->vars['ratio'] = $options['ratio'];
-    }
-
-    /**
-     * @param OptionsResolver $resolver
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults(array(
-            'ratio' => null,
-        ));
-    }
-
-    /**
      * Get parent
      *
      * @return string
@@ -79,15 +52,5 @@ class MediaType extends AbstractType
     public function getParent()
     {
         return 'text';
-    }
-
-    /**
-     * Returns the name of this type.
-     *
-     * @return string The name of this type
-     */
-    public function getName()
-    {
-        return 'media';
     }
 }

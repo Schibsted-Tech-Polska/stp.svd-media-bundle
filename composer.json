@@ -15,7 +15,12 @@
         }
     },
     "require": {
-        "knplabs/knp-gaufrette-bundle": ">=0.2"
+        "knplabs/gaufrette": "~0.2@dev",
+        "knplabs/knp-gaufrette-bundle": ">=0.2",
+        "schibsted-tech-polska/svd-core-bundle": ">=1.3"
+    },
+    "suggest": {
+        "liip/imagine-bundle": "Allows defining different image filters"
     },
     "target-dir": "Svd/MediaBundle"
 }
