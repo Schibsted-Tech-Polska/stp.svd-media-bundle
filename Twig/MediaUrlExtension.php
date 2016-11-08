@@ -2,7 +2,7 @@
 
 namespace Svd\MediaBundle\Twig;
 
-use Liip\ImagineBundle\Templating\ImagineExtension;
+use Svd\MediaBundle\Manager\MediaUrlManager;
 use Twig_Extension;
 use Twig_SimpleFilter;
 
@@ -11,37 +11,19 @@ use Twig_SimpleFilter;
  */
 class MediaUrlExtension extends Twig_Extension
 {
-    /** @var string */
-    protected $baseUrl;
-
-    /** @var array */
-    protected $liipImagineFilterMapper;
-
-    /** @var ImagineExtension|null */
-    protected $liipImagineTwigExtension;
+    /** @var MediaUrlManager */
+    protected $mediaUrlManager;
 
     /**
-     * Constructor
+     * Set media URL manager
      *
-     * @param string $baseUrl                 base URL
-     * @param array  $liipImagineFilterMapper filter mapper
-     */
-    public function __construct($baseUrl, array $liipImagineFilterMapper = [])
-    {
-        $this->baseUrl = rtrim($baseUrl, '/');
-        $this->liipImagineFilterMapper = $liipImagineFilterMapper;
-    }
-
-    /**
-     * Set Liip Imagine Twig extension
-     *
-     * @param ImagineExtension|null $liipImagineTwigExtension Liip Imagine Twig extension
+     * @param MediaUrlManager $mediaUrlManager media URL manager
      *
      * @return self
      */
-    public function setLiipImagineTwigExtension($liipImagineTwigExtension)
+    public function setMediaUrlManager(MediaUrlManager $mediaUrlManager)
     {
-        $this->liipImagineTwigExtension = $liipImagineTwigExtension;
+        $this->mediaUrlManager = $mediaUrlManager;
 
         return $this;
     }
@@ -68,13 +50,7 @@ class MediaUrlExtension extends Twig_Extension
      */
     public function getMediaUrl($fileName, $filter = null)
     {
-        $fileUrl = sprintf('%s/%s', $this->baseUrl, $fileName);
-        if (isset($this->liipImagineTwigExtension) && !empty($filter)) {
-            if (array_key_exists($filter, $this->liipImagineFilterMapper)) {
-                $filter = $this->liipImagineFilterMapper[$filter];
-            }
-            $fileUrl = $this->liipImagineTwigExtension->filter($fileUrl, $filter);
-        }
+        $fileUrl = $this->mediaUrlManager->getMediaUrl($fileName, $filter);
 
         return $fileUrl;
     }

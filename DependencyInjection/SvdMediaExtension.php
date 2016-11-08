@@ -34,7 +34,6 @@ class SvdMediaExtension extends Extension implements PrependExtensionInterface
         $container->setParameter('svd_media.adapter', $config['adapter']);
         $container->setParameter('svd_media.base_url', $config['base_url']);
         $container->setParameter('svd_media.liip_imagine.filter_mapper', $config['liip_imagine']['filter_mapper']);
-        $container->setParameter('svd_media.liip_imagine.twig_extension', $config['liip_imagine']['twig_extension']);
     }
 
     /**

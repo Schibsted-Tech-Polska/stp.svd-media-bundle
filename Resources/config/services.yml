@@ -31,6 +31,14 @@ services:
             -                           [setFileRepository, ["@svd_media.repository.file"]]
         class:                          Svd\MediaBundle\Manager\FileManager
 
+    svd_media.manager.media_url:
+        arguments:
+            -                           "%svd_media.base_url%"
+            -                           "%svd_media.liip_imagine.filter_mapper%"
+        calls:
+            -                           [setLiipImagineCacheManager, ["@=service('service_container').has('liip_imagine.cache.manager')? service('liip_imagine.cache.manager') : null"]]
+        class:                          Svd\MediaBundle\Manager\MediaUrlManager
+
     svd_media.transformer.id_to_file:
         calls:
             -                           [setFileRepository, ["@svd_media.repository.file"]]
@@ -38,11 +46,8 @@ services:
         class:                          Svd\MediaBundle\Form\DataTransformer\IdToFileTransformer
 
     svd_media.twig_extension.media_url:
-        arguments:
-            -                           "%svd_media.base_url%"
-            -                           "%svd_media.liip_imagine.filter_mapper%"
         calls:
-            -                           [setLiipImagineTwigExtension, ["%svd_media.liip_imagine.twig_extension%"]]
+            -                           [setMediaUrlManager, ["@svd_media.manager.media_url"]]
         class:                          Svd\MediaBundle\Twig\MediaUrlExtension
         public:                         false
         tags:

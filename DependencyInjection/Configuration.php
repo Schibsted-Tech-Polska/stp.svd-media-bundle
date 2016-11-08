@@ -40,9 +40,6 @@ class Configuration implements ConfigurationInterface
                                 'admin_thumbnail' => 'thumbnail',
                             ])
                         ->end()
-                        ->scalarNode('twig_extension')
-                            ->defaultValue(null)
-                        ->end()
                     ->end()
                 ->end()
             ->end();
