@@ -2,6 +2,7 @@
 
 namespace Svd\MediaBundle\Command;
 
+use DateTime;
 use Svd\CoreBundle\Command\BaseCommand;
 use Svd\MediaBundle\Entity\File;
 use Symfony\Bridge\Monolog\Logger;
@@ -27,17 +28,20 @@ class RemoveUnusedMediaCommand extends BaseCommand
      */
     protected function process()
     {
-        $fileRepository = $this->getContainer()
-            ->get('svd_media.repository.file');
-        $fileManager = $this->getContainer()
-            ->get('svd_media.manager.file');
+        $container = $this->getContainer();
+        $fileManager = $container->get('svd_media.manager.file');
+        $fileRepository = $container->get('svd_media.repository.file');
+
+        $fileNoveltyPeriod = $container->getParameter('svd_media.file_novelty_period');
+        $fileNoveltyDeadline = new DateTime(sprintf('now - %d seconds', $fileNoveltyPeriod));
 
         foreach ($fileRepository->iterateByNotUsed() as $fileSet) {
             /** @var File $file */
             $file = current($fileSet);
-            $fileManager->removeFile($file);
-
-            $this->write(sprintf('File "%s" has been deleted!', $file->getFilename()), Logger::DEBUG);
+            if ($file->getUpdatedAt() < $fileNoveltyDeadline) {
+                $fileManager->removeFile($file);
+                $this->write(sprintf('File "%s" has been deleted!', $file->getFilename()), Logger::DEBUG);
+            }
         }
     }
 }
