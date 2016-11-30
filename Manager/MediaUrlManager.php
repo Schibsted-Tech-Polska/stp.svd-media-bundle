@@ -49,18 +49,19 @@ class MediaUrlManager
     /**
      * Get media URL
      *
-     * @param string      $fileName file name
-     * @param string|null $filter   filter
+     * @param string      $fileName      file name
+     * @param string|null $filter        filter
+     * @param array       $runtimeConfig runtime config
      *
      * @return string
      */
-    public function getMediaUrl($fileName, $filter = null)
+    public function getMediaUrl($fileName, $filter = null, array $runtimeConfig = [])
     {
         if (isset($this->liipImagineCacheManager) && !empty($filter)) {
             if (array_key_exists($filter, $this->liipImagineFilterMapper)) {
                 $filter = $this->liipImagineFilterMapper[$filter];
             }
-            $fileUrl = $this->liipImagineCacheManager->getBrowserPath($fileName, $filter);
+            $fileUrl = $this->liipImagineCacheManager->getBrowserPath($fileName, $filter, $runtimeConfig);
         } else {
             $fileUrl = sprintf('%s/%s', $this->baseUrl, $fileName);
         }
