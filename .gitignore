@@ -8,12 +8,10 @@ _darcs
 .monotone
 .svn
 
-
 # Junk
 .DS_Store
 Thumbs.db
 
-
 # Symfony
 /composer.lock
-/vendor/*
+/vendor

@@ -46,3 +46,10 @@ Svd\MediaBundle\Entity\File:
                     on:                 update
             nullable:                   true
             type:                       datetime
+
+    manyToOne:
+        fileCategory:
+            inversedBy:                 files
+            joinColumn:
+                name:                   file_category_id
+            targetEntity:               Svd\MediaBundle\Entity\FileCategory

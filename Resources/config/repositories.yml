@@ -10,3 +10,13 @@ services:
         factory:
             -                           "@svd_media.alias.manager_service"
             -                           getRepository
+
+    svd_media.repository.file_category:
+        arguments:
+            -                           Svd\MediaBundle\Entity\FileCategory
+        calls:
+            -                           [setTranslator, ["@translator"]]
+        class:                          Svd\MediaBundle\Entity\Repository\FileCategoryRepository
+        factory:
+            -                           "@svd_media.alias.manager_service"
+            -                           getRepository

@@ -1,0 +1,81 @@
+Svd\MediaBundle\Entity\FileCategory:
+    gedmo:
+        tree:
+            type:                       nested
+    repositoryClass:                    Svd\MediaBundle\Entity\Repository\FileCategoryRepository
+    table:                              file_category
+    type:                               entity
+
+    uniqueConstraints:
+        CT_UNIQUE_IDX_1:
+            columns:
+                -                       slug
+
+    fields:
+        id:
+            generator:
+                strategy:               AUTO
+            id:                         true
+            type:                       integer
+        name:
+            type:                       string
+        slug:
+            gedmo:
+                slug:
+                    fields:
+                        -               name
+            type:                       string
+        lft:
+            gedmo:
+                -                       treeLeft
+            type:                       integer
+        rgt:
+            gedmo:
+                -                       treeRight
+            type:                       integer
+        level:
+            gedmo:
+                -                       treeLevel
+            type:                       integer
+        createdAt:
+            column:                     created_at
+            gedmo:
+                timestampable:
+                    on:                 create
+            type:                       datetime
+        updatedAt:
+            column:                     updated_at
+            gedmo:
+                timestampable:
+                    on:                 update
+            type:                       datetime
+
+    manyToOne:
+        parent:
+            gedmo:
+                -                       treeParent
+            inversedBy:                 children
+            targetEntity:               Svd\MediaBundle\Entity\FileCategory
+        root:
+            gedmo:
+                -                       treeRoot
+            joinColumn:
+                name:                   root
+            targetEntity:               Svd\MediaBundle\Entity\FileCategory
+
+    oneToMany:
+        children:
+            mappedBy:                   parent
+            orderBy:
+                lft:                    asc
+            targetEntity:               Svd\MediaBundle\Entity\FileCategory
+        files:
+            cascade:
+                -                       persist
+                -                       remove
+            mappedBy:                   fileCategory
+            targetEntity:               Svd\MediaBundle\Entity\File
+
+    lifecycleCallbacks:
+        postLoad:
+            -                           initializeCollections

@@ -38,6 +38,9 @@ class File implements ModelInterface
     /** @var integer */
     protected $size;
 
+    /** @var FileCategory */
+    protected $fileCategory;
+
     /**
      * Get filename
      *
@@ -154,6 +157,30 @@ class File implements ModelInterface
     public function setSize($size)
     {
         $this->size = $size;
+
+        return $this;
+    }
+
+    /**
+     * Get file category
+     *
+     * @return FileCategory
+     */
+    public function getFileCategory()
+    {
+        return $this->fileCategory;
+    }
+
+    /**
+     * Set file category
+     *
+     * @param FileCategory $fileCategory file category
+     *
+     * @return self
+     */
+    public function setFileCategory(FileCategory $fileCategory = null)
+    {
+        $this->fileCategory = $fileCategory;
 
         return $this;
     }

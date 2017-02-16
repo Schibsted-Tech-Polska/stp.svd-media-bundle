@@ -2,8 +2,8 @@
 
 namespace Svd\MediaBundle\Entity;
 
-use Svd\MediaBundle\Model\File as Model;
 use Svd\CoreBundle\Entity\EntityInterface;
+use Svd\MediaBundle\Model\File as Model;
 
 /**
  * Entity
