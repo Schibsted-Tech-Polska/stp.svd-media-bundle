@@ -1,12 +1,12 @@
 # SvD Media Bundle
-##Configuration
+## Configuration
 ```yaml
 svd_media:
     adapter:                            gaufrette_service_id
     base_url:                           file_folder_url
 ```
 
-##Usage
+## Usage
 Add ralation to your entity annotation.
 ```php
 /**
